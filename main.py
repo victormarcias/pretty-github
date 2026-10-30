@@ -4,15 +4,16 @@ from pathlib import Path
 import functions_framework
 
 STATIC_DIR = Path(__file__).parent / "public"
-MOUNT_PREFIX = "/rekap-docs"
+MOUNT_PREFIX = "/dev-docs"
 
 
 @functions_framework.http
-def serve_rekap(request):
+def serve_pretty_github(request):
     if request.path == MOUNT_PREFIX:
-        # Relative asset paths (rekap.css, rekap.js) resolve against the
-        # browser's current URL — without the trailing slash they'd resolve
-        # to the domain root instead of /rekap-docs/, 404ing every asset.
+        # Relative asset paths (pretty-github.css, pretty-github.js) resolve
+        # against the browser's current URL — without the trailing slash
+        # they'd resolve to the domain root instead of /dev-docs/, 404ing
+        # every asset.
         return ("", 301, {"Location": MOUNT_PREFIX + "/"})
 
     rel_path = request.path[len(MOUNT_PREFIX):].lstrip("/") or "index.html"

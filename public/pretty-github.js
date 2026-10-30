@@ -1,6 +1,6 @@
-const contentEl = document.getElementById('rekap-content');
-const contentInnerEl = document.getElementById('rekap-content-inner');
-const scrollTopEl = document.getElementById('rekap-scroll-top');
+const contentEl = document.getElementById('docs-content');
+const contentInnerEl = document.getElementById('docs-content-inner');
+const scrollTopEl = document.getElementById('docs-scroll-top');
 
 let currentPath = null;
 // `BASE`, `DEFAULT_PATH`, `titleFromName()`, `setActiveSidebarLink()`,
@@ -63,16 +63,16 @@ async function loadPage(path) {
 
 async function renderPage(path) {
   currentPath = path;
-  contentInnerEl.innerHTML = '<div class="rekap-status">Loading&hellip;</div>';
+  contentInnerEl.innerHTML = '<div class="docs-status">Loading&hellip;</div>';
   try {
     const container = await loadPage(path);
     contentInnerEl.innerHTML = container.innerHTML;
     contentInnerEl.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
     contentEl.scrollTop = 0;
-    document.title = `${titleFromName(path.split('/').pop())} — Rekap`;
+    document.title = `${titleFromName(path.split('/').pop())} — Dev Docs`;
     setActiveSidebarLink(path);
   } catch (err) {
-    contentInnerEl.innerHTML = `<div class="rekap-status rekap-error">Couldn't load <code>${path}</code>. ${err.message}</div>`;
+    contentInnerEl.innerHTML = `<div class="docs-status docs-error">Couldn't load <code>${path}</code>. ${err.message}</div>`;
   }
   closeSidebarOnMobile();
 }
@@ -135,7 +135,7 @@ window.addEventListener('hashchange', () => {
     topics = buildTopics(allFiles);
     renderSidebar(Array.from(topics.keys()));
   } catch (err) {
-    treeContainerEl.innerHTML = `<div class="rekap-status rekap-error">Couldn't load the file list. ${err.message}</div>`;
+    treeContainerEl.innerHTML = `<div class="docs-status docs-error">Couldn't load the file list. ${err.message}</div>`;
   }
   const { path, anchor } = currentPathAndAnchorFromHash();
   await renderPage(path);

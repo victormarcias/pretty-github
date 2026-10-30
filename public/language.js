@@ -1,13 +1,13 @@
 // Language selection: which variant of each topic to load (EN `name.md` vs
 // ES `name.es.md`), the popup menu that drives it, and persistence via
-// cookie. Loaded before rekap.js, which reads `topics`/`currentLang` and
-// calls `resolveLangPath()`/`baseKey()` from here.
+// cookie. Loaded before pretty-github.js, which reads `topics`/`currentLang`
+// and calls `resolveLangPath()`/`baseKey()` from here.
 
-const langMenuEl = document.getElementById('rekap-lang-menu');
-const langButtonEl = document.getElementById('rekap-lang-button');
-const langListEl = document.getElementById('rekap-lang-list');
+const langMenuEl = document.getElementById('docs-lang-menu');
+const langButtonEl = document.getElementById('docs-lang-button');
+const langListEl = document.getElementById('docs-lang-list');
 
-const LANG_COOKIE = 'rekap_lang';
+const LANG_COOKIE = 'pretty_github_lang';
 
 // Add an entry here (and a matching <li data-lang="…"> in index.html) to
 // support another language — everything else reads from this list.
@@ -25,7 +25,7 @@ function setCookie(name, value, days = 365) {
   document.cookie = `${name}=${encodeURIComponent(value)}; max-age=${days * 86400}; path=/; SameSite=Lax`;
 }
 
-let topics = new Map(); // baseKey ('folder/file.md') -> { en: bool, es: bool } — filled by rekap.js's init()
+let topics = new Map(); // baseKey ('folder/file.md') -> { en: bool, es: bool } — filled by pretty-github.js's init()
 let currentLang = getCookie(LANG_COOKIE) === 'es' ? 'es' : 'en';
 
 // Every topic in the repo exists as `name.md` (EN, default) and/or
@@ -64,8 +64,8 @@ function resolveLangPath(base) {
 function setLangUI(lang) {
   const info = LANGS[lang];
   if (info) {
-    langButtonEl.querySelector('.rekap-lang-flag').textContent = info.flag;
-    langButtonEl.querySelector('.rekap-lang-code').textContent = info.code;
+    langButtonEl.querySelector('.docs-lang-flag').textContent = info.flag;
+    langButtonEl.querySelector('.docs-lang-code').textContent = info.code;
   }
   langListEl.querySelectorAll('[data-lang]').forEach(li => {
     li.setAttribute('aria-selected', String(li.dataset.lang === lang));
@@ -91,10 +91,10 @@ async function setLang(lang) {
   if (!currentPath) return;
   // Fade the old content out, swap it once it's invisible, fade the new
   // content back in — avoids a jarring instant flip when switching language.
-  contentInnerEl.classList.add('rekap-fade');
+  contentInnerEl.classList.add('docs-fade');
   await new Promise(resolve => setTimeout(resolve, 160));
   await renderPage(currentPath);
-  requestAnimationFrame(() => contentInnerEl.classList.remove('rekap-fade'));
+  requestAnimationFrame(() => contentInnerEl.classList.remove('docs-fade'));
 }
 
 langButtonEl.addEventListener('click', (e) => {

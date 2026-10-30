@@ -1,26 +1,26 @@
 // The file tree: fetching the repo's file list from GitHub, rendering it as
 // a collapsible sidebar, search/filtering, active-link highlighting, and the
-// mobile sidebar open/close. Loaded before rekap.js, which reads `BASE`,
-// `DEFAULT_PATH`, `titleFromName()`, `setActiveSidebarLink()` and
+// mobile sidebar open/close. Loaded before pretty-github.js, which reads
+// `BASE`, `DEFAULT_PATH`, `titleFromName()`, `setActiveSidebarLink()` and
 // `closeSidebarOnMobile()` from here.
 
 const OWNER = 'victormarcias';
-const REPO = 'Rekap';
+const REPO = 'dev-docs';
 const BRANCH = 'main';
 const BASE = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/`;
 const TREE_API = `https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`;
-const CACHE_KEY = 'rekap_tree_cache_v1';
+const CACHE_KEY = 'pretty_github_tree_cache_v1';
 const CACHE_TTL_MS = 60 * 60 * 1000;
 const DEFAULT_PATH = 'README.md';
 
-const sidebarEl = document.getElementById('rekap-sidebar');
-const treeContainerEl = document.getElementById('rekap-tree-container');
-const searchInput = document.getElementById('rekap-search');
-const searchClearEl = document.getElementById('rekap-search-clear');
-const sidebarToggle = document.getElementById('rekap-sidebar-toggle');
-const sidebarBackdrop = document.getElementById('rekap-sidebar-backdrop');
+const sidebarEl = document.getElementById('docs-sidebar');
+const treeContainerEl = document.getElementById('docs-tree-container');
+const searchInput = document.getElementById('docs-search');
+const searchClearEl = document.getElementById('docs-search-clear');
+const sidebarToggle = document.getElementById('docs-sidebar-toggle');
+const sidebarBackdrop = document.getElementById('docs-sidebar-backdrop');
 
-let allFiles = []; // filled by rekap.js's init() via fetchTree()
+let allFiles = []; // filled by pretty-github.js's init() via fetchTree()
 
 const ACRONYMS = new Set([
   'acid', 'ai', 'api', 'aws', 'bdd', 'ci', 'cd', 'cdn', 'cli', 'cors', 'cap',
@@ -130,14 +130,14 @@ function renderNode(node, dirPath) {
     });
   for (const file of files) {
     const li = document.createElement('li');
-    li.className = 'rekap-tree-file';
+    li.className = 'docs-tree-file';
     const a = document.createElement('a');
     a.href = '#' + file.path;
     const isReadme = file.name.toLowerCase() === 'readme.md';
     const isGlossary = file.name.toLowerCase() === 'glossary.md';
     a.textContent = isReadme ? 'Index' : isGlossary ? 'Glossary' : titleFromName(file.name);
-    if (isReadme) a.classList.add('rekap-index-link');
-    if (isGlossary) a.classList.add('rekap-glosario-link');
+    if (isReadme) a.classList.add('docs-index-link');
+    if (isGlossary) a.classList.add('docs-glosario-link');
     a.dataset.path = file.path;
     li.appendChild(a);
     ul.appendChild(li);
@@ -150,13 +150,13 @@ function renderSidebar(paths, { expandAll = false } = {}) {
   treeContainerEl.innerHTML = '';
 
   if (paths.length === 0) {
-    treeContainerEl.innerHTML = '<div class="rekap-status">No matches.</div>';
+    treeContainerEl.innerHTML = '<div class="docs-status">No matches.</div>';
     return;
   }
 
   const tree = buildTree(paths);
   const wrap = document.createElement('div');
-  wrap.className = 'rekap-tree';
+  wrap.className = 'docs-tree';
   wrap.appendChild(renderNode(tree, ''));
   treeContainerEl.appendChild(wrap);
 
@@ -233,7 +233,7 @@ function toggleDetailsAnimated(details) {
 // remembering one page, independent of which page is currently open/active.
 // Persisted in localStorage so it survives reloads, but never auto-navigates
 // there — it's just a visual "this is where I was" pointer in the tree.
-const BOOKMARK_KEY = 'rekap_bookmark_v1';
+const BOOKMARK_KEY = 'pretty_github_bookmark_v1';
 
 // Index (README.md) and Glossary are permanent fixtures already one click
 // away at all times — bookmarking them would just point back at the sidebar
@@ -267,7 +267,7 @@ function makePinButton(path) {
   const isBookmarked = getBookmark() === path;
   const btn = document.createElement('button');
   btn.type = 'button';
-  btn.className = 'rekap-pin-btn';
+  btn.className = 'docs-pin-btn';
   if (isBookmarked) btn.classList.add('is-bookmarked');
   btn.textContent = '📌';
   btn.setAttribute('aria-label', isBookmarked ? 'Remove bookmark' : 'Bookmark this page');
@@ -285,7 +285,7 @@ function makePinButton(path) {
 // if different, next to whichever page is actually bookmarked — so the
 // bookmark stays visible in the tree even while reading something else.
 function syncPinButtons() {
-  treeContainerEl.querySelectorAll('.rekap-pin-btn').forEach(btn => btn.remove());
+  treeContainerEl.querySelectorAll('.docs-pin-btn').forEach(btn => btn.remove());
   const bookmark = getBookmark();
   const paths = new Set([currentPath, bookmark].filter(path => path && isBookmarkable(path)));
   paths.forEach(path => {
