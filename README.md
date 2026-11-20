@@ -1,6 +1,8 @@
 # pretty-github
 
-Visor web (`pretty-github`) en vivo del repo [dev-docs](https://github.com/victormarcias/dev-docs) — se sirve bajo `victormarcias.online/dev-docs`, repo aparte del [portfolio](https://github.com/victormarcias/portfolio), sin relación de código con él (mismo espíritu que `fastapi-blog` bajo `/hero-blog`: repo y deploy propios, el portfolio solo lo rutea).
+Visor web (`pretty-github`) en vivo del repo
+[dev-docs](https://github.com/victormarcias/dev-docs). Se sirve bajo
+`victormarcias.online/dev-docs`, con repo y deploy propios.
 
 No hay build ni export intermedio: el sidebar se arma en el cliente pidiendo el árbol del repo dev-docs a la API de GitHub, y cada página se pide en vivo a `raw.githubusercontent.com` y se renderiza con `marked` + `highlight.js` (ambos por CDN, sin bundler).
 
